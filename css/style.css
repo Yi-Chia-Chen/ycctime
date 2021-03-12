@@ -1,0 +1,111 @@
+::selection {
+    background: #FF4F4F;
+    color: white;
+}
+* {
+    box-sizing: border-box;
+}
+a:link {
+	color: rgb(126, 255, 249);
+	text-decoration: none;
+}
+a:visited {
+	color: rgb(126, 255, 249);
+}
+a:hover {
+	color: #FF4F4F;
+}
+a:active {
+	color: #b32020;
+}
+body {
+	background: #161616;
+	padding: 0;
+	margin: 0;
+    color: #cccccc;
+    font-size: 15px;
+	font-family: 'Century Gothic', 'Calibri', Geneva, Sans-serif;
+    list-style-position:inside;
+}
+.center {
+    text-align: center;
+}
+main {
+    display: grid;
+    justify-content: space-evenly;
+    grid-template-columns: 24% 24% 24% 24%;
+    grid-template-areas: 'projects next-actions waiting-for someday';
+}
+section {
+	width: 95%;
+    margin: 10px 2.5%;
+    border: solid 4px;
+    border-radius: 15px;
+    min-height: 800px;
+}
+#projects-panel {
+    grid-area: projects;
+    border-color: rgb(235, 221, 30);
+}
+#next-actions-panel {
+    grid-area: next-actions;
+    border-color: rgb(81, 219, 134);
+}
+#waiting-for-panel {
+    grid-area: waiting-for;
+    border-color: rgb(201, 60, 78);
+}
+#someday-panel {
+    grid-area: someday;
+    border-color: rgb(30, 153, 235);
+}
+
+.pink {
+    color: rgb(247, 137, 188);
+}
+
+/* #projects-panel:hover ~ section {
+    display: none;
+}
+#next-actions-panel:hover ~ section {
+    display: none;
+}
+#waiting-for-panel:hover ~ section {
+    display: none;
+}
+#projects-panel:hover {
+    grid-column-start: projects;
+    grid-column-end: someday;
+}
+#next-actions-panel:hover {
+    grid-column-start: next-actions;
+    grid-column-end: someday;
+}
+#waiting-for-panel:hover {
+    grid-column-start: waiting-for;
+    grid-column-end: someday;
+} */
+h1 {
+    font-size: 25px;
+}
+ul {
+    margin-left:-25px;
+}
+li {
+    font-size: 16px;
+    line-height: 30px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+li:hover {
+    white-space: normal;
+    color: #ff8864;
+}
+.level1-list {
+    display: none;
+}
+li:hover + .level1-list, .level1-list:hover {
+    display: block;
+    margin-bottom: 40px;
+}
