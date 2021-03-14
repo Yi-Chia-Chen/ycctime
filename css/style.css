@@ -6,11 +6,11 @@
     box-sizing: border-box;
 }
 a:link {
-	color: rgb(126, 255, 249);
+	color: rgb(10, 226, 215);
 	text-decoration: none;
 }
 a:visited {
-	color: rgb(126, 255, 249);
+	color: rgb(10, 226, 215);
 }
 a:hover {
 	color: #FF4F4F;
@@ -24,7 +24,7 @@ body {
 	margin: 0;
     color: #cccccc;
     font-size: 15px;
-	font-family: 'Century Gothic', 'Calibri', Geneva, Sans-serif;
+	font-family: 'ariel', Sans-serif;
     list-style-position:inside;
 }
 .center {
@@ -60,8 +60,8 @@ section {
     border-color: rgb(30, 153, 235);
 }
 
-.pink {
-    color: rgb(247, 137, 188);
+.deadline {
+    color: #ff8864;
 }
 
 /* #projects-panel:hover ~ section {
@@ -100,7 +100,8 @@ li {
 }
 li:hover {
     white-space: normal;
-    color: #ff8864;
+    background-color: #6d4747;
+    /* color: #ff8864; */
 }
 .level1-list {
     display: none;
@@ -108,4 +109,10 @@ li:hover {
 li:hover + .level1-list, .level1-list:hover {
     display: block;
     margin-bottom: 40px;
+}
+.project-name {
+    color: rgb(235, 221, 30);
+}
+.highlight-project {
+    background-color: #5c5c5c;
 }
