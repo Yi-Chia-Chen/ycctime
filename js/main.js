@@ -1,36 +1,12 @@
 // Yi-Chia Chen
 
 // planned improvement:
-// 1. use MySQL (set up WAMP)
-// CREATE DATABASE ToDo
-// CREATE TABLE Projects (
-//     ID tinyint NOT NULL AUTO_INCREMENT,
-//     Acronym varchar(20) UNIQUE,
-//     Name tinytext NOT NULL,
-//     PRIMARY KEY (ID)
-// );
-// CREATE TABLE Tasks (
-//     ID int NOT NULL AUTO_INCREMENT,
-//     ProjectID tinyint NOT NULL,
-//     Name tinytext NOT NULL,
-//     Deadline date,
-//     Description text(1000),
-//     Priority tinyint,
-//     Pending tinytext,
-//     PRIMARY KEY (ID),
-//     FOREIGN KEY (ProjectID) REFERENCES Projects(ID)
-// );
-// CREATE VIEW NextTasks AS
-// SELECT DISTINCT ON (ProjectID) * FROM Tasks
-// WHERE Pending IS NULL
-// ORDER BY Priority DESC NULLS LAST;
-//
+// 1. use MySQL
 // 2. select by clicking and up down left right keys
 //     a. keep visible
 //     b. action menu: add to google calendar, copy text, (required server to edit) delete
 //     c. (required server to edit) allow dragging (show trach bin, other list light up when hover, line indicating where it'd be inserted, drop on item to add a sublist)
 //     d. (required server to edit) plus sign show up for adding items
-//
 // 3. plus sign for adding items
 //     a. clicking the sign call a pop up menu for items
 
