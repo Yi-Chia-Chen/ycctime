@@ -132,12 +132,12 @@ li:hover {
     background-color: #6d4747;
 }
 
-.level1-list {
+.description-list {
     display: none;
 }
 
-li:hover+.level1-list,
-.level1-list:hover {
+li:hover+.description-list,
+.description-list:hover {
     display: block;
     margin-bottom: 40px;
 }

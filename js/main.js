@@ -1,86 +1,129 @@
 // Yi-Chia Chen
 
 // planned improvement:
-// 1. use MySQL
-// 2. select by clicking and up down left right keys
-//     a. keep visible
-//     b. action menu: add to google calendar, copy text, (required server to edit) delete
-//     c. (required server to edit) allow dragging (show trach bin, other list light up when hover, line indicating where it'd be inserted, drop on item to add a sublist)
-//     d. (required server to edit) plus sign show up for adding items
-// 3. plus sign for adding items
-//     a. clicking the sign call a pop up menu for items
+// 1. plus sign for adding items: show a pop up menu for adding items
+// 2. click projects to stay unfolded and hightlight its tasks only
+// 3. action menu: add to google calendar, copy text, delete
+// 4. allow dragging (other list light up when hover, line indicating where it'd be inserted, drop on item to turn into description)
+let todo = {};
 
-function create_new_unordered_list(parent_element, id) {
-    parent_element.append("<ul class='level1-list' id=" + id + '></ul>');
-    return $('#' + id);
+function get_projects() {
+    $.ajax({
+        type: "POST",
+        url: 'php/get_projects.php',
+        success: parse_projects,
+    });
 }
 
-function add_list_item(list_element, item_text, item_class, item_id) {
-    item_text = item_text.replace('[', "<span class='project-name'>[").replace(']', "]</span>");
-    list_element.append("<li class='" + item_class + "' id='" + item_id + "'>" + item_text + '</li>');
+function get_tasks() {
+    $.ajax({
+        type: "POST",
+        url: 'php/get_tasks.php',
+        success: parse_tasks,
+    });
+}
+
+function get_descriptions() {
+    $.ajax({
+        type: "POST",
+        url: 'php/get_descriptions.php',
+        success: parse_descriptions,
+    });
+}
+
+function parse_projects(data) {
+    todo.projects = eval(data);
+    todo.acronym_dict = {};
+    for (let p of todo.projects) {
+        todo.acronym_dict[p.id] = p.acronym;
+        let item_text = "<span class='project-name'>[" + p.acronym + "]</span> " + p.name;
+        let item_class = p.acronym;
+        let item_id = 'projects-item-' + p.id;
+        add_list_item($('#projects-list'), item_text, item_class, item_id);
+    }
+    get_descriptions();
+}
+
+function parse_tasks(data) {
+    todo.tasks = eval(data);
+    for (let t of todo.tasks) {
+        if (t.priority == 0) {
+            add_task_to_panel(t, 'someday');
+        } else if (t.pending === null) {
+            add_task_to_panel(t, 'next-tasks');
+        } else {
+            add_task_to_panel(t, 'waiting-for');
+        }
+    }
+    set_hover();
+}
+
+function parse_descriptions(data) {
+    todo.descriptions = eval(data);
+    todo.description_dict = {};
+    for (let d of todo.descriptions) {
+        if (typeof todo.description_dict[d.taskId] === 'undefined') {
+            todo.description_dict[d.taskId] = [d];
+        } else {
+            todo.description_dict[d.taskId].push(d);
+        }
+    }
+    get_tasks();
+}
+
+function add_list_item(list_el, item_text, item_class, item_id) {
+    list_el.append("<li class='" + item_class + "' id='" + item_id + "'>" + item_text + '</li>');
     return $('#' + item_id);
 }
 
-function add_level_0_items(list_el, item_obj, index) {
-    let el = add_list_item(list_el, item_obj.name, item_obj.acronym, list_el.attr('id') + '-item-' + index);
-    if (typeof item_obj.deadline !== 'undefined') {
-        el.attr('title', item_obj.deadline);
-        el.addClass('deadline');
+function add_task_to_panel(task, panel) {
+    let list_el = $('#' + panel + '-list');
+    let task_class = todo.acronym_dict[task.projectId];
+    let task_text = "<span class='project-name'>[" + task_class + "]</span> " + task.name;
+    if (task.pending !== null) {
+        task_text += ' (' + task.pending + ')'
+    }
+    let task_id = 'task-' + task.id;
+    let task_el = add_list_item(list_el, task_text, task_class, task_id);
+    if (task.deadline !== null) {
+        task_el.attr('title', task.deadline);
+        task_el.addClass('deadline');
+    }
+    if (typeof todo.description_dict[task.id] !== 'undefined') {
+        add_descriptions(panel, task.id, todo.description_dict[task.id]);
     }
 }
 
-function add_descriptions_items(list_el, item_obj, index) {
-    let level1_list = create_new_unordered_list(list_el, list_el.attr('id') + '-level1-' + index);
-    for (let j = 0; j < item_obj.descriptions.length; j++) {
-        add_list_item(level1_list, item_obj.descriptions[j], 'others', level1_list.attr('id') + '-item-' + index + '-' + j);
+function add_descriptions(panel, task_id, descriptions) {
+    let description_list_id = 'task-' + task_id + '-descriptions';
+    let description_list = create_description_list(panel, description_list_id);
+    for (let d of descriptions) {
+        let description_id = 'description-' + d.id;
+        add_list_item(description_list, d.description, 'description', description_id);
     }
 }
 
-function add_next_items(list_el, item_obj, index) {
-    let level1_list = $('#' + list_el.attr('id') + '-level1-' + index);
-    if (level1_list.length == 0) {
-        level1_list = create_new_unordered_list(list_el, list_el.attr('id') + '-level1-' + index);
-    }
-    for (let j = 0; j < item_obj.next.length; j++) {
-        add_list_item(level1_list, item_obj.next[j], 'others', level1_list.attr('id') + '-item-' + index + '-next-' + j);
-    }
+function create_description_list(panel, id) {
+    let list_el = $('#' + panel + '-list');
+    list_el.append("<ul class='description-list' id=" + id + '></ul>');
+    return $('#' + id);
 }
 
-
-function loop_for_adding_items(list, list_element) {
-    for (let i = 0; i < list.length; i++) {
-        add_level_0_items(list_element, list[i], i);
-
-        if (typeof list[i].descriptions !== 'undefined') {
-            add_descriptions_items(list_element, list[i], i);
-        }
-
-        if (list_element.attr('id') == 'projects-list') {
-            if (typeof list[i].next !== 'undefined') {
-                add_next_items(list_element, list[i], i);
-            }
-        }
-    }
-}
-
-// display lists
-$(document).ready(function () {
-
-    loop_for_adding_items(projects, $('#projects-list'));
-    loop_for_adding_items(next_tasks, $('#next-tasks-list'));
-    loop_for_adding_items(waiting_for, $('#waiting-for-list'));
-    loop_for_adding_items(someday, $('#someday-list'));
-
+function set_hover() {
     $('li').hover(
         function () {
-            const CLASSES = $(this).attr('class');
-            const PROJECT_NAME = CLASSES.replace('deadline', '').replace(' ', '');
-            if (PROJECT_NAME !== 'others') {
-                $('.' + PROJECT_NAME).addClass('highlight-project');
+            let classes = $(this).attr('class');
+            let project_name = classes.replace('deadline', '').replace(' ', '');
+            if (project_name !== 'others') {
+                $('.' + project_name).addClass('highlight-project');
             }
         }, function () {
             $('li').removeClass('highlight-project');
         }
     );
+}
 
+// display lists
+$(document).ready(function () {
+    get_projects();
 });
